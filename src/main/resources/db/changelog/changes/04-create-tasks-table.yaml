@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: com.taskmanagement
+      changes:
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: priority
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: due_date
+                  type: date
+              - column:
+                  name: project_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tasks_project
+                    references: projects(id)
+              - column:
+                  name: assignee_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_tasks_assignee
+                    references: users(id)

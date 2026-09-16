@@ -31,46 +31,46 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Task {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @Column(nullable = false)
     private String name;
-
+    
     private String description;
-
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Priority priority;
-
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskStatus status = TaskStatus.NOT_STARTED;
-
+    
     @Column(name = "due_date")
     private LocalDate dueDate;
-
+    
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
-
+    
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
-
+    
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
-
+    
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<Attachment> attachments = new ArrayList<>();
-
+    
     @ManyToMany
     @JoinTable(
-        name = "task_labels",
-        joinColumns = @JoinColumn(name = "task_id"),
-        inverseJoinColumns = @JoinColumn(name = "label_id")
+            name = "task_labels",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
     )
     private Set<Label> labels = new HashSet<>();
 }

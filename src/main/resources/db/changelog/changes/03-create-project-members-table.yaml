@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: com.taskmanagement
+      changes:
+        - createTable:
+            tableName: project_members
+            columns:
+              - column:
+                  name: project_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_project_members_project
+                    references: projects(id)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_project_members_user
+                    references: users(id)
+        - addPrimaryKey:
+            tableName: project_members
+            columnNames: project_id, user_id

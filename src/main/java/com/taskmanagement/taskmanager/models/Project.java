@@ -29,34 +29,34 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Project {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @Column(nullable = false)
     private String name;
-
+    
     private String description;
-
+    
     @Column(name = "start_date")
     private LocalDate startDate;
-
+    
     @Column(name = "end_date")
     private LocalDate endDate;
-
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProjectStatus status = ProjectStatus.INITIATED;
-
+    
     @ManyToMany
     @JoinTable(
-        name = "project_members",
-        joinColumns = @JoinColumn(name = "project_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
+            name = "project_members",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> members = new HashSet<>();
-
+    
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
 }
