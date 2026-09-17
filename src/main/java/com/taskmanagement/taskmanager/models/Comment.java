@@ -31,8 +31,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @Column(nullable = false)
+    
+    @Column(nullable = false, length = 1000)
     private String text;
 
     @Column(nullable = false)

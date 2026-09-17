@@ -37,6 +37,7 @@ public class Project {
     @Column(nullable = false)
     private String name;
     
+    @Column(length = 500)
     private String description;
     
     @Column(name = "start_date")
