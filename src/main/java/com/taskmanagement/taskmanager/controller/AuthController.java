@@ -1,7 +1,10 @@
 package com.taskmanagement.taskmanager.controller;
 
+import com.taskmanagement.taskmanager.dto.user.UserLoginRequestDto;
+import com.taskmanagement.taskmanager.dto.user.UserLoginResponseDto;
 import com.taskmanagement.taskmanager.dto.user.UserRegistrationRequestDto;
 import com.taskmanagement.taskmanager.dto.user.UserResponseDto;
+import com.taskmanagement.taskmanager.security.AuthenticationService;
 import com.taskmanagement.taskmanager.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     
     private final UserService userService;
+    private final AuthenticationService authenticationService;
     
     @Operation(
             summary = "Register a new user",
@@ -38,5 +42,16 @@ public class AuthController {
     public UserResponseDto register(
             @Valid @RequestBody UserRegistrationRequestDto requestDto) {
         return userService.registerUser(requestDto);
+    }
+    
+    @PostMapping("/login")
+    @Operation(
+            summary = "User login",
+            description = "Authenticates a user by email and password "
+                    + "and returns a JWT access token"
+    )
+    public UserLoginResponseDto login(
+            @Valid @RequestBody UserLoginRequestDto requestDto) {
+        return authenticationService.authenticate(requestDto);
     }
 }
