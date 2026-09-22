@@ -10,14 +10,12 @@ import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "labels")
 @Getter
 @Setter
-@NoArgsConstructor
 public class Label {
 
     @Id
