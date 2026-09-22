@@ -54,4 +54,39 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(status).body(response);
     }
+    
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFoundException(
+            UserNotFoundException exception,
+            HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        
+        ErrorResponseDto response = new ErrorResponseDto(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(status).body(response);
+    }
+    
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleUsernameAlreadyExists(
+            UsernameAlreadyExistsException exception,
+            HttpServletRequest request) {
+        
+        HttpStatus status = HttpStatus.CONFLICT;
+        
+        ErrorResponseDto response = new ErrorResponseDto(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(status).body(response);
+    }
 }
