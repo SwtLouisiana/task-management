@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                 ));
         
         if (requestDto.getUsername() != null) {
-            String username = requestDto.getUsername().trim();
+            String username = requestDto.getUsername();
             
             if (!username.equals(user.getUsername())) {
                 if (userRepository.existsByUsername(username)) {
@@ -79,11 +79,11 @@ public class UserServiceImpl implements UserService {
         }
         
         if (requestDto.getFirstName() != null) {
-            user.setFirstName(requestDto.getFirstName().trim());
+            user.setFirstName(requestDto.getFirstName());
         }
         
         if (requestDto.getLastName() != null) {
-            user.setLastName(requestDto.getLastName().trim());
+            user.setLastName(requestDto.getLastName());
         }
         
         return userMapper.toDto(user);
