@@ -89,4 +89,22 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity.status(status).body(response);
     }
+    
+    @ExceptionHandler(LastAdminException.class)
+    public ResponseEntity<ErrorResponseDto> handleLastAdminException(
+            LastAdminException exception,
+            HttpServletRequest request) {
+        
+        HttpStatus status = HttpStatus.CONFLICT;
+        
+        ErrorResponseDto response = new ErrorResponseDto(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(status).body(response);
+    }
 }

@@ -3,13 +3,17 @@ package com.taskmanagement.taskmanager.service.impl;
 import com.taskmanagement.taskmanager.dto.user.UserProfileUpdateRequestDto;
 import com.taskmanagement.taskmanager.dto.user.UserRegistrationRequestDto;
 import com.taskmanagement.taskmanager.dto.user.UserResponseDto;
+import com.taskmanagement.taskmanager.dto.user.UserRoleUpdateRequestDto;
+import com.taskmanagement.taskmanager.exception.LastAdminException;
 import com.taskmanagement.taskmanager.exception.RegistrationException;
 import com.taskmanagement.taskmanager.exception.UserNotFoundException;
 import com.taskmanagement.taskmanager.exception.UsernameAlreadyExistsException;
 import com.taskmanagement.taskmanager.mapper.UserMapper;
 import com.taskmanagement.taskmanager.models.User;
+import com.taskmanagement.taskmanager.models.enums.Role;
 import com.taskmanagement.taskmanager.repository.UserRepository;
 import com.taskmanagement.taskmanager.service.UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -85,6 +89,36 @@ public class UserServiceImpl implements UserService {
         if (requestDto.getLastName() != null) {
             user.setLastName(requestDto.getLastName());
         }
+        
+        return userMapper.toDto(user);
+    }
+    
+    @Override
+    @Transactional
+    public UserResponseDto updateUserRole(
+            Long userId,
+            UserRoleUpdateRequestDto requestDto) {
+        
+        List<User> admins = userRepository.findAllByRoleForUpdate(Role.ADMIN);
+        
+        User user = admins.stream()
+                .filter(admin -> admin.getId().equals(userId))
+                .findFirst()
+                .orElseGet(() -> userRepository.findById(userId)
+                        .orElseThrow(() -> new UserNotFoundException(
+                                "User not found by id: " + userId
+                        )));
+        
+        boolean isLastAdmin = admins.size() == 1
+                && admins.get(0).getId().equals(userId);
+        
+        if (isLastAdmin && requestDto.getRole() == Role.USER) {
+            throw new LastAdminException(
+                    "Cannot demote the last administrator"
+            );
+        }
+        
+        user.setRole(requestDto.getRole());
         
         return userMapper.toDto(user);
     }
