@@ -11,6 +11,7 @@ import org.mapstruct.MappingConstants;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "role", ignore = true)
     User toEntity(UserRegistrationRequestDto requestDto);
