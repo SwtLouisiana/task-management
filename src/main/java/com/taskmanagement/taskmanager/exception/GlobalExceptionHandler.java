@@ -4,7 +4,9 @@ import com.taskmanagement.taskmanager.dto.error.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -125,5 +127,43 @@ public class GlobalExceptionHandler {
         );
         
         return ResponseEntity.status(status).body(response);
+    }
+    
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception,
+            HttpServletRequest request) {
+        
+        if (!isUniqueConstraintViolation(exception)) {
+            throw exception;
+        }
+        
+        HttpStatus status = HttpStatus.CONFLICT;
+        
+        ErrorResponseDto response = new ErrorResponseDto(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                "A record with the provided unique value already exists",
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(status).body(response);
+    }
+    
+    private boolean isUniqueConstraintViolation(Throwable exception) {
+        Throwable cause = exception;
+        
+        while (cause != null) {
+            if (cause instanceof ConstraintViolationException violation
+                    && violation.getKind()
+                    == ConstraintViolationException.ConstraintKind.UNIQUE) {
+                return true;
+            }
+            
+            cause = cause.getCause();
+        }
+        
+        return false;
     }
 }

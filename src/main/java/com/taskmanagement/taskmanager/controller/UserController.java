@@ -54,7 +54,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Profile updated"),
             @ApiResponse(responseCode = "400", description = "Invalid profile data"),
             @ApiResponse(responseCode = "401", description = "Not authenticated"),
-            @ApiResponse(responseCode = "409", description = "Username is already taken")
+            @ApiResponse(responseCode = "409", description = "Profile update conflict")
     })
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public UserResponseDto updateUserProfile(
