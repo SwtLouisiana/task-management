@@ -50,5 +50,5 @@ public class User {
     private Role role = Role.USER;
 
     @OneToMany(mappedBy = "user")
-    private Set<ProjectMember> projects = new HashSet<>();
+    private Set<ProjectMember>  memberships = new HashSet<>();
 }
