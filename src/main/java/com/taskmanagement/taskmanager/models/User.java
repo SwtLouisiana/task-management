@@ -8,7 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.util.HashSet;
@@ -49,6 +49,6 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.USER;
 
-    @ManyToMany(mappedBy = "members")
-    private Set<Project> projects = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<ProjectMember> projects = new HashSet<>();
 }

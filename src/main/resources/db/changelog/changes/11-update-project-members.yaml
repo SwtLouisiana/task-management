@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: 11-1
+      author: com.taskmanagement
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: project_members
+            constraintName: fk_project_members_project
+
+  - changeSet:
+      id: 11-2
+      author: com.taskmanagement
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: project_members
+            constraintName: fk_project_members_user
+
+  - changeSet:
+      id: 11-3
+      author: com.taskmanagement
+      changes:
+        - dropPrimaryKey:
+            tableName: project_members
+
+  - changeSet:
+      id: 11-4
+      author: com.taskmanagement
+      changes:
+        - addColumn:
+            tableName: project_members
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+  - changeSet:
+      id: 11-5
+      author: com.taskmanagement
+      changes:
+        - addUniqueConstraint:
+            tableName: project_members
+            columnNames: project_id, user_id
+            constraintName: uk_project_members_project_user
+
+  - changeSet:
+      id: 11-6
+      author: com.taskmanagement
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: project_members
+            baseColumnNames: project_id
+            referencedTableName: projects
+            referencedColumnNames: id
+            constraintName: fk_project_members_project
+
+  - changeSet:
+      id: 11-7
+      author: com.taskmanagement
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: project_members
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_project_members_user
+
+  - changeSet:
+      id: 11-8
+      author: com.taskmanagement
+      changes:
+        - addColumn:
+            tableName: project_members
+            columns:
+              - column:
+                  name: role
+                  type: varchar(20)
+                  defaultValue: MEMBER
+                  constraints:
+                    nullable: false
