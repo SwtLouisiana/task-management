@@ -2,6 +2,7 @@ package com.taskmanagement.taskmanager.config;
 
 import com.taskmanagement.taskmanager.security.JwtAuthenticationFilter;
 import com.taskmanagement.taskmanager.security.JwtService;
+import com.taskmanagement.taskmanager.security.RestAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,7 +32,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtService jwtService,
-                                                   UserDetailsService userDetailsService)
+                                                   UserDetailsService userDetailsService,
+                                                   RestAccessDeniedHandler restAccessDeniedHandler)
             throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter =
                 new JwtAuthenticationFilter(
@@ -52,6 +54,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
                         )
+                        .accessDeniedHandler(restAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(

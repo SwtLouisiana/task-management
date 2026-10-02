@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -145,6 +146,24 @@ public class GlobalExceptionHandler {
                 status.value(),
                 status.getReasonPhrase(),
                 "A record with the provided unique value already exists",
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(status).body(response);
+    }
+    
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(
+            AccessDeniedException exception,
+            HttpServletRequest request) {
+        
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        
+        ErrorResponseDto response = new ErrorResponseDto(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                "You do not have permission to perform this action",
                 request.getRequestURI()
         );
         
