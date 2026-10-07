@@ -3,6 +3,7 @@ package com.taskmanagement.taskmanager.controller;
 import com.taskmanagement.taskmanager.config.OpenApiConfig;
 import com.taskmanagement.taskmanager.dto.project.ProjectCreateRequestDto;
 import com.taskmanagement.taskmanager.dto.project.ProjectResponseDto;
+import com.taskmanagement.taskmanager.dto.project.ProjectUpdateRequestDto;
 import com.taskmanagement.taskmanager.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -98,5 +100,31 @@ public class ProjectController {
     public ProjectResponseDto getProjectById(
             @PathVariable("projectId") Long projectId) {
         return projectService.getProjectById(projectId);
+    }
+    
+    @PutMapping("/{projectId}")
+    @Operation(
+            summary = "Update a project",
+            description = "Replaces editable project fields. "
+                    + "Only the owner or a project manager can update the project. "
+                    + "Omitted or null optional fields are cleared."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Project updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid project data"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied or project does not exist"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Project no longer exists after access was checked"
+            )
+    })
+    public ProjectResponseDto updateProject(
+            @PathVariable("projectId") Long projectId,
+            @Valid @RequestBody ProjectUpdateRequestDto requestDto) {
+        return projectService.updateProject(projectId, requestDto);
     }
 }

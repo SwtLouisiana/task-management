@@ -2,6 +2,7 @@ package com.taskmanagement.taskmanager.service.impl;
 
 import com.taskmanagement.taskmanager.dto.project.ProjectCreateRequestDto;
 import com.taskmanagement.taskmanager.dto.project.ProjectResponseDto;
+import com.taskmanagement.taskmanager.dto.project.ProjectUpdateRequestDto;
 import com.taskmanagement.taskmanager.exception.ProjectNotFoundException;
 import com.taskmanagement.taskmanager.exception.UserNotFoundException;
 import com.taskmanagement.taskmanager.mapper.ProjectMapper;
@@ -70,6 +71,20 @@ public class ProjectServiceImpl implements ProjectService {
             @P("projectId") Long projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        
+        return projectMapper.toDto(project);
+    }
+    
+    @Override
+    @Transactional
+    @PreAuthorize("@projectAccess.canManage(#projectId, authentication)")
+    public ProjectResponseDto updateProject(
+            @P("projectId") Long projectId,
+            ProjectUpdateRequestDto requestDto) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        
+        projectMapper.updateProject(requestDto, project);
         
         return projectMapper.toDto(project);
     }

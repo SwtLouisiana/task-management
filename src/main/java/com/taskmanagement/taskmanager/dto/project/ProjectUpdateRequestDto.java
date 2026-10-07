@@ -1,8 +1,10 @@
 package com.taskmanagement.taskmanager.dto.project;
 
+import com.taskmanagement.taskmanager.models.enums.ProjectStatus;
 import com.taskmanagement.taskmanager.validation.NormalizeText;
 import com.taskmanagement.taskmanager.validation.ValidProjectDates;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ValidProjectDates
-public class ProjectCreateRequestDto implements ProjectDates {
+public class ProjectUpdateRequestDto implements ProjectDates {
     
     @NormalizeText
     @NotBlank(message = "Project name is required")
@@ -27,4 +29,7 @@ public class ProjectCreateRequestDto implements ProjectDates {
     private LocalDate startDate;
     
     private LocalDate endDate;
+    
+    @NotNull(message = "Project status is required")
+    private ProjectStatus status;
 }
