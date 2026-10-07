@@ -2,6 +2,7 @@ package com.taskmanagement.taskmanager.service.impl;
 
 import com.taskmanagement.taskmanager.dto.project.ProjectCreateRequestDto;
 import com.taskmanagement.taskmanager.dto.project.ProjectResponseDto;
+import com.taskmanagement.taskmanager.exception.ProjectNotFoundException;
 import com.taskmanagement.taskmanager.exception.UserNotFoundException;
 import com.taskmanagement.taskmanager.mapper.ProjectMapper;
 import com.taskmanagement.taskmanager.models.Project;
@@ -13,6 +14,8 @@ import com.taskmanagement.taskmanager.repository.ProjectRepository;
 import com.taskmanagement.taskmanager.repository.UserRepository;
 import com.taskmanagement.taskmanager.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -49,5 +52,25 @@ public class ProjectServiceImpl implements ProjectService {
 
         Project savedProject = projectRepository.save(project);
         return projectMapper.toDto(savedProject);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("isAuthenticated() and #userEmail == authentication.name")
+    public Page<ProjectResponseDto> getAccessibleProjects(
+            @P("userEmail") String userEmail, Pageable pageable) {
+        return projectRepository.findAllAccessibleByUserEmail(userEmail, pageable)
+                .map(projectMapper::toDto);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@projectAccess.canView(#projectId, authentication)")
+    public ProjectResponseDto getProjectById(
+            @P("projectId") Long projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found"));
+        
+        return projectMapper.toDto(project);
     }
 }

@@ -11,8 +11,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @SecurityRequirement(name = OpenApiConfig.BEARER_AUTH)
 public class ProjectController {
-
+    
     private final ProjectService projectService;
-
+    
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(
@@ -44,10 +50,53 @@ public class ProjectController {
     public ProjectResponseDto createProject(
             @Valid @RequestBody ProjectCreateRequestDto requestDto,
             Authentication authentication) {
-
+        
         return projectService.createProject(
                 requestDto,
                 authentication.getName()
         );
+    }
+    
+    @GetMapping
+    @Operation(
+            summary = "Get accessible projects",
+            description = "Returns projects where the authenticated user "
+                    + "is the owner or a member"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Projects retrieved"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
+    public Page<ProjectResponseDto> getAccessibleProjects(
+            @ParameterObject @PageableDefault(size = 20, sort = "id") Pageable pageable,
+            Authentication authentication) {
+        
+        return projectService.getAccessibleProjects(
+                authentication.getName(),
+                pageable
+        );
+    }
+    
+    @GetMapping("/{projectId}")
+    @Operation(
+            summary = "Get project by ID",
+            description = "Returns a project accessible to the authenticated user"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Project retrieved"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied or project does not exist"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Project no longer exists after access was checked"
+            )
+    })
+    public ProjectResponseDto getProjectById(
+            @PathVariable("projectId") Long projectId) {
+        return projectService.getProjectById(projectId);
     }
 }

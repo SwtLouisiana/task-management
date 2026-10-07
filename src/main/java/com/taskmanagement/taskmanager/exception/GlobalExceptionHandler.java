@@ -170,6 +170,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(response);
     }
     
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleProjectNotFoundException(
+            ProjectNotFoundException exception,
+            HttpServletRequest request) {
+        
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        
+        ErrorResponseDto response = new ErrorResponseDto(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+        
+        return ResponseEntity.status(status).body(response);
+    }
+    
     private boolean isUniqueConstraintViolation(Throwable exception) {
         Throwable cause = exception;
         
